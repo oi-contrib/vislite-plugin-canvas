@@ -1,0 +1,21 @@
+v1.0.0:
+    date:2025-10-02
+    changes:
+      - 初始化版本
+        1、基本功能
+          * 画布大小监听
+          * 动画
+          * 事件
+            （click、dblclick、mousemove）
+          * 指令
+            （for、if）
+        2、类型
+          * number 数字
+          * string 字符串
+          * color 颜色
+        3、元素
+          * arc 弧
+          * circle 圆
+          * rect 矩形
+          * text 文字
+          
