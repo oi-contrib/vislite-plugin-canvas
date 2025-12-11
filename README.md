@@ -75,7 +75,9 @@ let canvas = new Canvas({
 如果希望改变球的大小，可以直接：
 
 ```js
-canvas.data.radius = 200
+canvas.setData({
+    radius : 200
+})
 ```
 
 还可以看出来，点击球的时候会触发点击事件，如果想在点击的时候修改球大小，就可以：
@@ -85,7 +87,9 @@ canvas.data.radius = 200
 event: {
     click(event) {
         // console.log("你点击了我")
-        this.data.radius = 200
+        this.setData({
+            radius : 200
+        })
     }
 },
 ......

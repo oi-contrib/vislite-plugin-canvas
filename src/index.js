@@ -31,10 +31,19 @@ export default function Canvas(option) {
     // 事件
     for (let eventName of ["click", "dblclick", "mousemove"]) {
         painter.bind(eventName, function (regionName, x, y) {
-            if (render.events && render.events[regionName]) render.events[regionName][eventName]?.call(instance, {
+            
+           let event = {
                 event: eventName,
-                x, y
-            })
+                x, y,
+                id: regionName || ""
+            }
+
+            if (render.events && render.events[regionName]) render.events[regionName][eventName]?.call(instance, event)
+
+            // 全局事件
+            if (option.event && option.event[eventName]) {
+                option.event[eventName].call(instance, event)
+            }
         })
     }
 
