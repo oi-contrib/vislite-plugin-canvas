@@ -1,5 +1,35 @@
 import CanvasConfigType from "vislite/types/CanvasConfig"
 
+interface eventArgType {
+    event: string
+    x: number
+    y: number
+    region: string
+}
+
+interface eventBackType {
+    (event: eventArgType): void
+}
+
+type eventType = {
+
+    /**
+     * 点击
+     */
+    click?: eventBackType
+
+    /**
+     * 双击
+     */
+    dblclick?: eventBackType
+
+    /**
+     * 移动
+     */
+    mousemove?: eventBackType
+
+}
+
 interface templateItemType {
     name: string
     for?: any
@@ -7,13 +37,7 @@ interface templateItemType {
     attr?: {
         [key: string]: any
     }
-    event?: {
-        [key: string]: (event: {
-            event: string
-            x: number
-            y: number
-        }) => void
-    }
+    event?: eventType
     config?: CanvasConfigType
     children?: Array<templateItemType>
 }
@@ -25,6 +49,11 @@ export default class Canvas {
             [key: string]: any
         },
         template: Array<templateItemType>
+
+        /**
+       * 全局事件，可选
+       */
+        event?: eventType
     })
 
     /**
