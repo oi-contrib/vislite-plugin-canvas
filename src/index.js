@@ -65,7 +65,7 @@ export default function Canvas(option) {
                     instance.painter.clearRect(0, 0, instance.width, instance.height)
                     for (let el of newRender.els) {
                         let oldIndex = render.elsMap[el.id]
-                        instance.painter.config(el.config)
+                        instance.painter.reset().config(el.config)
                         if (oldIndex) {
                             let attrValue = {}, newAttr = el.attr, oldAttr = render.els[oldIndex - 1].attr, attr = elementMap[el.name].attr
                             for (let key in attr) {
@@ -103,7 +103,7 @@ export default function Canvas(option) {
         instance.painter.clearRect(0, 0, instance.width, instance.height)
         render = useTemplate.call(instance, option.template, elementMap)
         for (let el of render.els) {
-            instance.painter.config(el.config)
+            instance.painter.reset().config(el.config)
             elementMap[el.name].draw.call(instance, el.id, el.attr)
         }
 
