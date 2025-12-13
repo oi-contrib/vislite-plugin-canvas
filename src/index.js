@@ -59,8 +59,16 @@ export default function Canvas(option) {
         if (hadWill) return
         hadWill = true
 
+
         setTimeout(function () {
             hadWill = false
+
+
+            if (stop) {
+
+                // 先提前停止上次的动画
+                if (stop) stop()
+            }
 
             let newRender = useTemplate.call(instance, option.template, elementMap)
 
@@ -86,9 +94,27 @@ export default function Canvas(option) {
                         elementMap[el.name].draw.call(instance, el.id, el.attr)
                     }
                 }
-            }, 500, function () {
+            }, 500, function (deep) {
+
+                // 修复未正确处理“中途动画”问题
+                // 2025年12月9日 于南京
+                if (deep < 1) {
+                    for (let elIndex = 0; elIndex < newRender.els.length; elIndex++) {
+                        let el = newRender.els[elIndex]
+                        let oldIndex = render.elsMap[el.id]
+                        if (oldIndex) {
+                            let oldAttr = render.els[oldIndex - 1].attr, attr = elementMap[el.name].attr
+                            for (let key in attr) {
+                                if (attr[key].animation) {
+                                    newRender.els[elIndex].attr[key] = attr[key].animation(el.attr[key], oldAttr[key])(deep)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 render = newRender
-            })
+            }).stop
 
         })
 
