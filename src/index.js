@@ -31,8 +31,8 @@ export default function Canvas(option) {
     // 事件
     for (let eventName of ["click", "dblclick", "mousemove"]) {
         painter.bind(eventName, function (regionName, x, y) {
-            
-           let event = {
+
+            let event = {
                 event: eventName,
                 x, y,
                 id: regionName || ""
@@ -54,41 +54,44 @@ export default function Canvas(option) {
             instance.data[key] = newData[key]
         }
 
-        if (!hadWill) {
-            hadWill = true
+        // 优化多次setData性能问题
+        // 2025年12月9日 于南京
+        if (hadWill) return
+        hadWill = true
 
-            setTimeout(function () {
-                let newRender = useTemplate.call(instance, option.template, elementMap)
+        setTimeout(function () {
+            hadWill = false
 
-                // 这里需要考虑中途来新的动画
-                stop = animation(function (deep) {
-                    instance.painter.clearRect(0, 0, instance.width, instance.height)
-                    for (let el of newRender.els) {
-                        let oldIndex = render.elsMap[el.id]
-                        instance.painter.reset().config(el.config)
-                        if (oldIndex) {
-                            let attrValue = {}, newAttr = el.attr, oldAttr = render.els[oldIndex - 1].attr, attr = elementMap[el.name].attr
-                            for (let key in attr) {
-                                if (attr[key].animation) {
+            let newRender = useTemplate.call(instance, option.template, elementMap)
 
-                                    // 这里应该缓存一下
-                                    attrValue[key] = attr[key].animation(newAttr[key], oldAttr[key])(deep)
-                                } else {
-                                    attrValue[key] = el.attr[key]
-                                }
+            // 这里需要考虑中途来新的动画
+            stop = animation(function (deep) {
+                instance.painter.clearRect(0, 0, instance.width, instance.height)
+                for (let el of newRender.els) {
+                    let oldIndex = render.elsMap[el.id]
+                    instance.painter.reset().config(el.config)
+                    if (oldIndex) {
+                        let attrValue = {}, newAttr = el.attr, oldAttr = render.els[oldIndex - 1].attr, attr = elementMap[el.name].attr
+                        for (let key in attr) {
+                            if (attr[key].animation) {
+
+                                // 这里应该缓存一下
+                                attrValue[key] = attr[key].animation(newAttr[key], oldAttr[key])(deep)
+                            } else {
+                                attrValue[key] = el.attr[key]
                             }
-                            elementMap[el.name].draw.call(instance, el.id, attrValue)
-                        } else {
-                            elementMap[el.name].draw.call(instance, el.id, el.attr)
                         }
+                        elementMap[el.name].draw.call(instance, el.id, attrValue)
+                    } else {
+                        elementMap[el.name].draw.call(instance, el.id, el.attr)
                     }
-                }, 500, function () {
-                    hadWill = false
-                    render = newRender
-                })
-
+                }
+            }, 500, function () {
+                render = newRender
             })
-        }
+
+        })
+
     }
 
     // 监听画布大小改变
