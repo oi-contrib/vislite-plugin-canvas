@@ -5,7 +5,7 @@ export default function (color) {
     if (!helpEl) {
         helpEl = document.createElement("div")
         helpEl.style.position = "fixed"
-        helpEl.style.widht = "1px"
+        helpEl.style.width = "1px"
         helpEl.style.height = "1px"
         helpEl.style.left = "-100px"
         document.getElementsByTagName("body")[0].appendChild(helpEl)

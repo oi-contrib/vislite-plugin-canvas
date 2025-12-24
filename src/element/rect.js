@@ -4,9 +4,7 @@ export default {
         this.painter[attr.type + "Rect"](attr.x, attr.y, attr.width, attr.height)
     },
     attr: {
-        type: {
-            type: "string"
-        },
+        type: {},
         x: {
             type: "number"
         },

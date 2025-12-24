@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../dist/canvas.js"></script>
-    <title>测试用例</title>
+    <title>测试用例 | 主体设计</title>
     <style>
         body {
             margin: 0;
@@ -22,6 +22,7 @@
 <body>
     <div id="root"></div>
     <script>
+
         let canvas = new Canvas({
             el: document.getElementById("root"),
             data: {
@@ -31,22 +32,23 @@
             },
             template: [{
                 for: _this => _this.data.xs,
-                if: _this => _this.$index != 1,
+                // if: _this => _this.$index != 1,
                 name: "circle",
                 attr: {
                     type: "fill",
                     cx: _this => _this.$value,
                     // cx: _this => _this.width * 0.5,
                     cy: 300,
-                    radius: _this => _this.data.radius * 0.5 * (_this.$index + 1)
+                    radius: _this => _this.data.radius * 0.2 * (_this.$index + 1)
                 },
                 config: {
                     // fillStyle: "blue" // _this => _this.data.color
-                    fillStyle: _this => _this.$index == 0 ? "red" : "blue"
+                    // fillStyle: _this => _this.$index == 0 ? "red" : "blue"
+                    fillStyle: _this => ["red", "green", "blue"][_this.$index]
                 },
                 event: {
                     click(event) {
-                        console.log(event)
+                        // console.log(event)
                         this.setData({
                             radius: 50 + Math.random() * 300
                         })
@@ -55,6 +57,8 @@
                 children: []
             }]
         })
+
+        console.log(canvas)
 
         setTimeout(function () {
             canvas.setData({

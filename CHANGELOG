@@ -9,6 +9,7 @@ v1.0.0:
             （click、dblclick、mousemove）
           * 指令
             （for、if）
+          * 自定义元素
         2、类型
           * number 数字
           * string 字符串
@@ -19,7 +20,7 @@ v1.0.0:
           * rect 矩形
           * text 文字
 v1.1.0:
-    date:
+    date:2025-12-24
     changes:
       - 修复bug
         1、修复样式未隔绝可能触发的错误
@@ -30,3 +31,11 @@ v1.1.0:
         1、event补充id参数，方便for循环时定位交互元素
         2、对象配置项
           * event 全局事件
+          * time 动画时长
+          * lifecycle 生命周期
+        3、对象属性
+          * sized 是否完成画布初始化
+        4、滴答轮询动画
+          * startDida()
+          * stopDida()
+        5、自定义类型

@@ -19,13 +19,23 @@ export default function Canvas(option) {
         painter,
         data: option.data,
         width: info.width,
-        height: info.height
+        height: info.height,
+        time: option.time || 500,
+        sized: false
     }
+    let dida_deep = 0
 
     let render = {
         els: [],
         elsMap: {},
         events: {}
+    }
+
+    let lifecycle = (hookName) => {
+        let _lifecycle = option.lifecycle || {}
+        if (_lifecycle[hookName]) {
+            _lifecycle[hookName].call(instance)
+        }
     }
 
     // 事件
@@ -48,7 +58,7 @@ export default function Canvas(option) {
     }
 
     // 修改数据
-    let hadWill = false, stop
+    let hadWill = false, stop, needDida = true
     instance.setData = function (newData) {
         for (let key in newData) {
             instance.data[key] = newData[key]
@@ -59,21 +69,23 @@ export default function Canvas(option) {
         if (hadWill) return
         hadWill = true
 
-
         setTimeout(function () {
             hadWill = false
-
 
             if (stop) {
 
                 // 先提前停止上次的动画
                 if (stop) stop()
             }
-
             let newRender = useTemplate.call(instance, option.template, elementMap)
 
-            // 这里需要考虑中途来新的动画
-            stop = animation(function (deep) {
+            let deepback = function (deep) {
+
+                if (instance.width === 0 && instance.height === 0) {
+                    stop()
+                }
+
+                needDida = false
                 instance.painter.clearRect(0, 0, instance.width, instance.height)
                 for (let el of newRender.els) {
                     let oldIndex = render.elsMap[el.id]
@@ -82,42 +94,85 @@ export default function Canvas(option) {
                         let attrValue = {}, newAttr = el.attr, oldAttr = render.els[oldIndex - 1].attr, attr = elementMap[el.name].attr
                         for (let key in attr) {
                             if (attr[key].animation) {
-
-                                // 这里应该缓存一下
                                 attrValue[key] = attr[key].animation(newAttr[key], oldAttr[key])(deep)
                             } else {
                                 attrValue[key] = el.attr[key]
                             }
                         }
-                        elementMap[el.name].draw.call(instance, el.id, attrValue)
+                        elementMap[el.name].draw.call(instance, el.id, attrValue, dida_deep)
                     } else {
-                        elementMap[el.name].draw.call(instance, el.id, el.attr)
+                        elementMap[el.name].draw.call(instance, el.id, el.attr, dida_deep)
                     }
                 }
-            }, 500, function (deep) {
+            }
 
-                // 修复未正确处理“中途动画”问题
-                // 2025年12月9日 于南京
-                if (deep < 1) {
-                    for (let elIndex = 0; elIndex < newRender.els.length; elIndex++) {
-                        let el = newRender.els[elIndex]
-                        let oldIndex = render.elsMap[el.id]
-                        if (oldIndex) {
-                            let oldAttr = render.els[oldIndex - 1].attr, attr = elementMap[el.name].attr
-                            for (let key in attr) {
-                                if (attr[key].animation) {
-                                    newRender.els[elIndex].attr[key] = attr[key].animation(el.attr[key], oldAttr[key])(deep)
+            if (instance.time <= 0) {
+                deepback(1)
+            } else {
+
+                stop = animation(deepback, instance.time, function (deep) {
+
+                    // 修复未正确处理“中途动画”问题
+                    // 2025年12月9日 于南京
+                    if (deep < 1) {
+                        for (let elIndex = 0; elIndex < newRender.els.length; elIndex++) {
+                            let el = newRender.els[elIndex]
+                            let oldIndex = render.elsMap[el.id]
+                            if (oldIndex) {
+                                let oldAttr = render.els[oldIndex - 1].attr, attr = elementMap[el.name].attr
+                                for (let key in attr) {
+                                    if (attr[key].animation) {
+                                        newRender.els[elIndex].attr[key] = attr[key].animation(el.attr[key], oldAttr[key])(deep)
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                render = newRender
-            }).stop
+                    render = newRender
+
+                    needDida = true
+                }).stop
+            }
 
         })
+    }
 
+    // 开启滴答轮询动画
+    let didaTime, hadDida = false
+    instance.startDida = function (time) {
+        didaTime = time || 500
+
+        if (!hadDida) {
+            hadDida = true
+
+            let doit = () => {
+                let stop = animation(function (deep) {
+                    dida_deep = deep
+
+                    if (instance.width === 0 && instance.height === 0) {
+                        hadDida = false
+                        stop()
+                    }
+
+                    if (needDida) {
+                        instance.painter.clearRect(0, 0, instance.width, instance.height)
+                        for (let el of render.els) {
+                            instance.painter.reset().config(el.config)
+                            elementMap[el.name].draw.call(instance, el.id, el.attr, dida_deep)
+                        }
+                    }
+                }, didaTime, () => {
+                    if (hadDida) doit()
+                }).stop
+            }
+            doit()
+        }
+    }
+
+    // 停止滴答轮询动画
+    instance.stopDida = function () {
+        hadDida = false
     }
 
     // 监听画布大小改变
@@ -128,6 +183,9 @@ export default function Canvas(option) {
 
         instance.width = info.width
         instance.height = info.height
+
+        lifecycle("resized")
+        instance.sized = true
 
         instance.painter.clearRect(0, 0, instance.width, instance.height)
         render = useTemplate.call(instance, option.template, elementMap)
@@ -162,10 +220,16 @@ Canvas.defineElement = elementFactroy(function (name, draw, attr) {
     }
 
     elementMap[name] = {
-        draw: function (uniqueId, attr) {
+        draw: function (uniqueId, attr, deep) {
             this.painter.setRegion(uniqueId)
-            draw.call(this, attr)
+            draw.call(this, attr, deep)
         },
         attr: _attr
     }
+    return Canvas
 })
+
+Canvas.defineType = function (typeName, animationFactory) {
+    animationMap[typeName] = animationFactory
+    return Canvas
+}

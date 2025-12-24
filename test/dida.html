@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../dist/canvas.js"></script>
+    <title>测试用例 | 滴答轮询动画</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #root {
+            width: 90vw;
+            height: 90vh;
+            border: 2px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script>
+
+        Canvas.defineElement("demo", function (attr, deep) {
+            // this.painter.strokeCircle(200, 200, 300 * (deep > 0.5 ? (1 - deep) : deep))
+            this.painter.strokeCircle(200, 200, 300 * deep)
+            console.log(this)
+        }, {});
+
+        let canvas = new Canvas({
+            el: document.getElementById("root"),
+            data: {},
+            template: [{
+                name: "demo",
+                attr: {}
+            }]
+        })
+
+        canvas.startDida(2000)
+        // setTimeout(function () {
+        //     canvas.stopDida()
+        // }, 5000)
+
+    </script>
+</body>
+
+</html>

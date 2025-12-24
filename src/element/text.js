@@ -8,12 +8,8 @@ export default {
         }
     },
     attr: {
-        type: {
-            type: "string"
-        },
-        text: {
-            type: "string"
-        },
+        type: {},
+        text: {},
         x: {
             type: "number"
         },

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../dist/canvas.js"></script>
+    <title>测试用例 | 自定义属性类型</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #root {
+            width: 90vw;
+            height: 90vh;
+            border: 2px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script>
+
+        let calcDeep = (newValue, oldValue, deep) => (newValue - oldValue) * deep + oldValue
+
+        Canvas.defineType("lineVal", (newValue, oldValue) => {
+            return function (deep) {
+
+
+                let val = [];
+                for (let i = 0; i < newValue.length; i++) {
+                    val.push([
+                        calcDeep(newValue[i][0], oldValue[i][0], deep),
+                        calcDeep(newValue[i][1], oldValue[i][1], deep)
+                    ])
+                }
+
+                return val;
+
+            }
+        })
+
+        Canvas.defineElement("demo", function (attr) {
+
+            this.painter.beginPath().moveTo(...attr.line[0]).lineTo(...attr.line[1]).lineTo(...attr.line[2]).stroke();
+
+        }, {
+            line: {
+                type: "lineVal"
+            }
+        });
+
+        let canvas = new Canvas({
+            el: document.getElementById("root"),
+            data: {
+                line: [
+                    [100, 200], [200, 100], [300, 300]
+                ]
+            },
+            template: [{
+                name: "demo",
+                attr: {
+                    line: _this => _this.data.line
+                }
+            }]
+        })
+
+        setTimeout(function () {
+            canvas.setData({
+                line: [
+                    [100, 100], [200, 300], [300, 50]
+                ]
+            });
+        }, 1000);
+
+    </script>
+</body>
+
+</html>

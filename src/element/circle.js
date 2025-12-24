@@ -4,9 +4,7 @@ export default {
         this.painter[attr.type + "Circle"](attr.cx, attr.cy, attr.radius)
     },
     attr: {
-        type: {
-            type: "string"
-        },
+        type: {},
         cx: {
             type: "number"
         },

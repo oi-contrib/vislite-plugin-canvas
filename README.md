@@ -49,6 +49,10 @@ let canvas = new Canvas({
     data: {
         radius: 100
     },
+    time: 200, // 动画时长，可选（v1.1.0 新增）
+    lifecycle: { // 生命周期，可选（v1.1.0 新增）
+        resized(){} // 画布大小改变后
+    },
     template: [{
         name: "circle",
         attr: {
@@ -103,6 +107,71 @@ event: {
 - [事件](./docs/event.md)
 - [图形（arc 弧、circle 圆、rect 矩形、text 文字）](./docs/graph.md)
 - [自定义图形](./docs/define-graph.md)
+- [自定义类型](./docs/define-type.md)
+
+此外，获取的canvas对象还有如下方法或属性：
+
+### painter
+
+画笔，和vislite的[canvas画笔](https://oi-contrib.github.io/VISLite/#/api/canvas/api)API一致，只读。
+
+### width
+
+画布宽，只读。
+
+### height
+
+画布高，只读。
+
+### sized
+
+> v1.1.0 新增
+
+是否完成画布初始化，只读。
+
+### time
+
+> v1.1.0 新增
+
+当前动画时长，可以修改此值以控制下次动画时长：
+
+```js
+canvas.time = "一个新值"
+```
+
+### data
+
+数据，只读。
+
+### setData
+
+设置数据，会触发新的绘制：
+
+```js
+canvas.setData({
+    // ...
+})
+```
+
+### startDida
+
+> v1.1.0 新增
+
+开启滴答轮询动画：
+
+```js
+canvas.startDida(time=500)
+```
+
+### stopDida
+
+> v1.1.0 新增
+
+停止滴答轮询动画：
+
+```js
+canvas.stopDida()
+```
 
 ## 版权
 

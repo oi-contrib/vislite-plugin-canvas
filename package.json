@@ -1,6 +1,6 @@
 {
   "name": "@vislite/canvas",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "一个更灵活好用的数据驱动的画布",
   "main": "./dist/canvas.min.js",
   "typings": "./types/index.d.ts",
@@ -29,7 +29,7 @@
     "terser": "^5.17.1"
   },
   "dependencies": {
-    "oipage": "^1.3.1",
-    "vislite": "^1.4.0"
+    "oipage": "^1.5.0",
+    "vislite": "^1.7.0"
   }
 }

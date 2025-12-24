@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../dist/canvas.js"></script>
+    <title>测试用例 | 生命周期</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #root {
+            width: 90vw;
+            height: 90vh;
+            border: 2px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script>
+
+        let canvas = new Canvas({
+            el: document.getElementById("root"),
+            data: {
+                radius: 100
+            },
+            lifecycle: {
+                resized() {
+                    console.log(this.width, this.height, this.sized)
+                }
+            },
+            template: [{
+                name: "circle",
+                attr: {
+                    type: "fill",
+                    cx: 200,
+                    cy: 200,
+                    radius: _this => _this.data.radius
+                },
+                config: {
+                    fillStyle: "red"
+                },
+                event: {
+                    click(event) {
+                        this.setData({
+                            radius: 200
+                        })
+                    }
+                },
+                children: []
+            }]
+        })
+
+    </script>
+</body>
+
+</html>

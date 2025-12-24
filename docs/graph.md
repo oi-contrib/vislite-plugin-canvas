@@ -4,7 +4,7 @@
 
 ```js
 type: {
-    type: "string"
+    type: "any"
 },
 cx: {
     type: "number"
@@ -30,7 +30,7 @@ deg: {
 
 ```js
 type: {
-    type: "string"
+    type: "any"
 },
 cx: {
     type: "number"
@@ -47,7 +47,7 @@ radius: {
 
 ```js
 type: {
-    type: "string"
+    type: "any"
 },
 x: {
     type: "number"
@@ -67,10 +67,10 @@ height: {
 
 ```js
 type: {
-    type: "string"
+    type: "any"
 },
 text: {
-    type: "string"
+    type: "any"
 },
 x: {
     type: "number"
